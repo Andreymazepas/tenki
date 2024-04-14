@@ -1,6 +1,6 @@
 import { Canvas, useFrame } from '@react-three/fiber'
 import './App.css'
-import { Cloud, Clouds, OrbitControls, Outlines, Sky, Text3D } from '@react-three/drei'
+import { Cloud, Clouds, OrbitControls, Outlines, Sky, Text, Text3D } from '@react-three/drei'
 import { useControls } from "leva"
 import { useState } from 'react';
 import { Color, MeshNormalMaterial } from 'three';
@@ -81,6 +81,9 @@ const Experience = ({ targetConfig }: any) => {
       <boxGeometry args={[x, y, z]} />
       <meshStandardMaterial color="black" wireframe />
     </mesh>
+    <Text position={[-10, -10, 0]} color="black" fontSize={3} font="/RampartOne-Regular.ttf" characters='曇り晴れ雨快晴雪' whiteSpace='overflowWrap' overflowWrap='break-word' maxWidth={1} >
+      曇り晴れ雨快晴雪
+    </Text>
     <Sky inclination={skyInclination} azimuth={skyAzimuth} />
     <Cloud {...config} bounds={[x, y, z]} color={color} concentrate="inside" />
     <Number value={`${temp} ${useCelsius ? 'C˚' : 'F˚'}`} />
