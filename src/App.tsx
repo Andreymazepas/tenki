@@ -1,15 +1,15 @@
 import { Canvas, useFrame } from '@react-three/fiber'
 import './App.css'
-import { Cloud, Clouds, OrbitControls, Outlines, Sky, Text, Text3D } from '@react-three/drei'
+import { Cloud, Clouds, MeshTransmissionMaterial, OrbitControls, Outlines, Sky, Text, Text3D, useGLTF } from '@react-three/drei'
 import { useControls } from "leva"
 import { useState } from 'react';
-import { Color, MeshNormalMaterial } from 'three';
+import { Color, MeshNormalMaterial, MeshStandardMaterial } from 'three';
 
 const Number = ({ value }: { value: string }) => {
   // load all numbers using drei and show accordingly
-  return <Text3D position={[-3, -4, 0]} letterSpacing={-0.06} size={2} font="/Inter_Bold.json" >
+  return <Text3D position={[-3, -8, 0]} letterSpacing={-0.06} size={4} font="/Inter_Bold.json" >
     {value}
-    <meshStandardMaterial color="silver" metalness={0.6} roughness={0.6} />
+    <meshStandardMaterial color="#454545" metalness={0.6} roughness={0.6} />
   </Text3D>
 
 
@@ -32,8 +32,10 @@ const Experience = ({ targetConfig }: any) => {
     temp: { value: 0, min: -10, max: 40, step: 1 },
     useCelsius: true,
     skyInclination: { value: 0.6, min: 0, max: 1, step: 0.01 },
-    skyAzimuth: { value: 0.25, min: 0, max: 1, step: 0.01 },
+    skyAzimuth: { value: 0.78, min: 0, max: 1, step: 0.01 },
   }));
+
+  const beveledCube = useGLTF('/beveled_cube.glb');
 
   // flag to check if we need to lerp
   let needsLerp = false;
@@ -77,15 +79,22 @@ const Experience = ({ targetConfig }: any) => {
   });
 
   return (<>
-    <mesh>
-      <boxGeometry args={[x, y, z]} />
-      <meshStandardMaterial color="black" wireframe />
+    <mesh scale={[8, 8, 8]} renderOrder={1} position={[0, -2, 0]}>
+      <bufferGeometry {...beveledCube.nodes.Cube.geometry} />
+      <MeshTransmissionMaterial
+        transmission={0.999}
+        color="white"
+        roughness={0}
+        thickness={0.1}
+        chromaticAberration={0.01}
+
+      />
     </mesh>
-    <Text position={[-10, -10, 0]} color="black" fontSize={3} font="/RampartOne-Regular.ttf" characters='曇り晴れ雨快晴雪' whiteSpace='overflowWrap' overflowWrap='break-word' maxWidth={1} >
+    <Text position={[-12, -16, 0]} color="black" fontSize={5} font="/RampartOne-Regular.ttf" characters='曇り晴れ雨快晴雪' whiteSpace='overflowWrap' overflowWrap='break-word' maxWidth={1}  >
       曇り晴れ雨快晴雪
     </Text>
-    <Sky inclination={skyInclination} azimuth={skyAzimuth} />
-    <Cloud {...config} bounds={[x, y, z]} color={color} concentrate="inside" />
+    <Sky inclination={skyInclination} azimuth={skyAzimuth} mieCoefficient={0} rayleigh={0.05} />
+    <Cloud {...config} bounds={[x, y, z]} color={color} concentrate="inside" renderOrder={10} position={[0, 1, 0]} />
     <Number value={`${temp} ${useCelsius ? 'C˚' : 'F˚'}`} />
   </>
   )
@@ -116,7 +125,7 @@ function App() {
     fade: 0,
     growth: 4,
     speed: 0.5,
-    color: "#101010"
+    color: "#232323"
   }
 
   const normalConfig = {
@@ -146,7 +155,7 @@ function App() {
     </div>
     <Canvas>
       <ambientLight intensity={10} />
-      <pointLight position={[0, -1, 4]} intensity={100} />
+      <pointLight position={[0, -8, 4]} intensity={100} />
 
       <Experience targetConfig={targetConfig} />
       <OrbitControls />
